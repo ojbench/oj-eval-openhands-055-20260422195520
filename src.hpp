@@ -133,8 +133,8 @@ public:
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
         if (ask_date < send_date) return "mail not send";
-        if (! (ask_date < arrive_date)) return "already arrive"; // ask_date >= arrive_date
-        // Binary search for equality with a station time
+        if (__date_less(arrive_date, ask_date)) return "already arrive"; // ask_date > arrive_date
+        // equality with station times
         int lo = 0, hi = len - 1;
         while (lo <= hi) {
             int mid = (lo + hi) >> 1;
@@ -143,6 +143,28 @@ public:
             }
             if (__date_less(station_time[mid], ask_date)) lo = mid + 1; else hi = mid - 1;
         }
+        // At or before first station time
+        if (len > 0 && (ask_date < station_time[0])) {
+            return string("wait in station ") + station_name[0];
+        }
+        // Between station times
+        if (len > 0) {
+            // find first station_time > ask_date
+            int L = 0, R = len - 1, pos = len;
+            while (L <= R) {
+                int mid = (L + R) >> 1;
+                if (__date_less(ask_date, station_time[mid])) { pos = mid; R = mid - 1; }
+                else L = mid + 1;
+            }
+            if (pos > 0 && pos < len) return "in train"; // between pos-1 and pos
+            if (pos == len) {
+                // after last station time but before arrive_date
+                if (! (ask_date < arrive_date)) return "already arrive"; // equality handled above didn't match any station time
+                return string("wait in station ") + station_name[len-1];
+            }
+        }
+        // No stations provided
+        if (! (ask_date < arrive_date)) return "already arrive";
         return "in train";
     }
 
