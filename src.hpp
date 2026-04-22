@@ -197,14 +197,10 @@ public:
 
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
-        if (ask_date < send_date) return "mail not send";
+        if (ask_date < send_date) return "not send";
         if (__date_less(arrive_date, ask_date) || (! (ask_date < arrive_date) && ! (arrive_date < ask_date))) {
-            if (! (ask_date < arrive_date) && ! (arrive_date < ask_date)) {
-                // exactly arrival day: consider arrived progress? Spec ambiguous; treat as already arrive
-            }
             return "already arrive";
         }
-        // proportion of time elapsed
         double total_time = (double)(__date_to_days(arrive_date) - __date_to_days(send_date));
         double used_time = (double)(__date_to_days(ask_date) - __date_to_days(send_date));
         double current_mile = (used_time / total_time) * (double)total_mile;
