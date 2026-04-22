@@ -133,15 +133,15 @@ public:
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
         if (ask_date < send_date) return "mail not send";
-        if (__date_less(arrive_date, ask_date)) return "already arrive"; // ask_date > arrive_date
-        // if exactly arrival date, report last station name if exists
-        if (! (ask_date < arrive_date) && ! (arrive_date < ask_date)){
-            return string("in station ") + (len>0?station_name[len-1]:string(""));
-        }
-        for (int i=0;i<len;i++){
-            if (! (ask_date < station_time[i]) && ! (station_time[i] < ask_date)){
-                return string("in station ") + station_name[i];
+        if (! (ask_date < arrive_date)) return "already arrive"; // ask_date >= arrive_date
+        // Binary search for equality with a station time
+        int lo = 0, hi = len - 1;
+        while (lo <= hi) {
+            int mid = (lo + hi) >> 1;
+            if (! (ask_date < station_time[mid]) && ! (station_time[mid] < ask_date)) {
+                return string("in station ") + station_name[mid];
             }
+            if (__date_less(station_time[mid], ask_date)) lo = mid + 1; else hi = mid - 1;
         }
         return "in train";
     }
