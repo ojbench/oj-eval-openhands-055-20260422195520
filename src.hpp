@@ -74,7 +74,7 @@ public:
 
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
-        if (ask_date < send_date) return "not send";
+        if (ask_date < send_date) return "mail not send";
         else if (ask_date < take_off_date) return "wait in airport";
         else if (ask_date < land_date) return "in flight";
         else if (ask_date < arrive_date) return "already land";
@@ -132,8 +132,8 @@ public:
 
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
-        if (ask_date < send_date) return "not send";
-        if (__date_less(arrive_date, ask_date)) return "already arrive"; // ask_date > arrive_date
+        if (ask_date < send_date) return "mail not send";
+        if (!(ask_date < arrive_date)) return "already arrive";
         // equality with station times
         int lo = 0, hi = len - 1;
         while (lo <= hi) {
@@ -197,7 +197,7 @@ public:
 
     string send_status(int y, int m, int d) override {
         date ask_date(y,m,d);
-        if (ask_date < send_date) return "not send";
+        if (ask_date < send_date) return "mail not send";
         if (__date_less(arrive_date, ask_date) || (! (ask_date < arrive_date) && ! (arrive_date < ask_date))) {
             return "already arrive";
         }
